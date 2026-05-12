@@ -1,14 +1,42 @@
+const openCard = document.getElementById("openCard");
+const birthdayContent = document.getElementById("birthdayContent");
+const bgMusic = document.getElementById("bgMusic");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+
 const lilies = [];
+let bloomStart = null;
+
+openCard.addEventListener("click", async () => {
+  bloomStart = performance.now();
+
+  openCard.style.transition = "opacity 1s ease";
+  openCard.style.opacity = "0";
+
+  try {
+    bgMusic.volume = 0.6;
+    await bgMusic.play();
+  } catch (error) {
+    console.log("Music could not be played.");
+  }
+
+  setTimeout(() => {
+    openCard.style.display = "none";
+    birthdayContent.classList.remove("hidden");
+  }, 1000);
+});
 
 function resize() {
   const dpr = window.devicePixelRatio || 1;
+
   canvas.width = innerWidth * dpr;
   canvas.height = innerHeight * dpr;
+
   canvas.style.width = innerWidth + "px";
   canvas.style.height = innerHeight + "px";
+
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
   createLilies();
 }
 
@@ -28,21 +56,30 @@ function createLilies() {
       swayOffset: Math.random() * Math.PI * 2
     });
   }
+
   lilies.sort((a, b) => a.scale - b.scale);
 }
 
 function drawPetal(length, width, glow) {
   ctx.beginPath();
   ctx.moveTo(0, 0);
+
   ctx.bezierCurveTo(
-    width, -length * 0.25,
-    width * 0.6, -length * 0.82,
-    0, -length
+    width,
+    -length * 0.25,
+    width * 0.6,
+    -length * 0.82,
+    0,
+    -length
   );
+
   ctx.bezierCurveTo(
-    -width * 0.6, -length * 0.82,
-    -width, -length * 0.25,
-    0, 0
+    -width * 0.6,
+    -length * 0.82,
+    -width,
+    -length * 0.25,
+    0,
+    0
   );
 
   ctx.strokeStyle = "rgba(245, 220, 255, 0.96)";
@@ -57,9 +94,19 @@ function drawLily(lily, time) {
 
   const sway = Math.sin(time * 0.001 + lily.swayOffset) * 0.1;
 
+  let bloomScale = 1;
+
+  if (bloomStart !== null) {
+    const elapsed = time - bloomStart;
+    const duration = 2000;
+    const progress = Math.min(elapsed / duration, 1);
+
+    bloomScale = 1 - Math.pow(1 - progress, 3);
+  }
+
   ctx.translate(lily.x, lily.y);
   ctx.rotate(lily.rotation + sway);
-  ctx.scale(lily.scale, lily.scale);
+  ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
   ctx.strokeStyle = "rgba(90, 255, 150, 0.85)";
   ctx.lineWidth = 3;
@@ -71,7 +118,8 @@ function drawLily(lily, time) {
   ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
   ctx.stroke();
 
-  const glow = 16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
+  const glow =
+    16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
 
   for (let i = 0; i < 6; i++) {
     ctx.save();
@@ -122,8 +170,13 @@ function drawLily(lily, time) {
 
 function drawSparkles(time) {
   for (let i = 0; i < 60; i++) {
-    const x = (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
-    const y = (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) * innerHeight;
+    const x =
+      (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) *
+      innerWidth;
+
+    const y =
+      (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) *
+      innerHeight;
 
     ctx.fillStyle = "rgba(210, 120, 255, 0.08)";
     ctx.beginPath();
