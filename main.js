@@ -1,17 +1,6 @@
-const bgMusic = document.getElementById("bgMusic");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const lilies = [];
-
-window.addEventListener("load", async () => {
-  try {
-    await bgMusic.play();
-    bgMusic.muted = false;
-    bgMusic.volume = 0.6;
-  } catch (error) {
-    console.log("Autoplay was blocked by the browser.");
-  }
-});
 
 function resize() {
   const dpr = window.devicePixelRatio || 1;
