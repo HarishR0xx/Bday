@@ -1,30 +1,13 @@
 const openCard = document.getElementById("openCard");
 const birthdayContent = document.getElementById("birthdayContent");
+const moreContent = document.getElementById("moreContent");
+const showMore = document.getElementById("showMore");
 const bgMusic = document.getElementById("bgMusic");
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-
 const lilies = [];
 let bloomStart = null;
-
-openCard.addEventListener("click", async () => {
-  bloomStart = performance.now();
-
-  openCard.style.transition = "opacity 1s ease";
-  openCard.style.opacity = "0";
-
-  try {
-    bgMusic.volume = 0.6;
-    await bgMusic.play();
-  } catch (error) {
-    console.log("Music could not be played.");
-  }
-
-  setTimeout(() => {
-    openCard.style.display = "none";
-    birthdayContent.classList.remove("hidden");
-  }, 1000);
-});
 
 function resize() {
   const dpr = window.devicePixelRatio || 1;
@@ -100,7 +83,6 @@ function drawLily(lily, time) {
     const elapsed = time - bloomStart;
     const duration = 2000;
     const progress = Math.min(elapsed / duration, 1);
-
     bloomScale = 1 - Math.pow(1 - progress, 3);
   }
 
@@ -118,8 +100,7 @@ function drawLily(lily, time) {
   ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
   ctx.stroke();
 
-  const glow =
-    16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
+  const glow = 16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
 
   for (let i = 0; i < 6; i++) {
     ctx.save();
@@ -146,37 +127,27 @@ function drawLily(lily, time) {
   for (let i = 0; i < 6; i++) {
     ctx.save();
     ctx.rotate((Math.PI * 2 / 6) * i);
-
     ctx.strokeStyle = "#ffe27d";
     ctx.lineWidth = 1.5;
     ctx.shadowColor = "#ffe27d";
     ctx.shadowBlur = 8;
-
     ctx.beginPath();
     ctx.moveTo(0, -4);
     ctx.lineTo(0, -28);
     ctx.stroke();
-
     ctx.fillStyle = "#ffbf4d";
     ctx.beginPath();
     ctx.arc(0, -30, 2.5, 0, Math.PI * 2);
     ctx.fill();
-
     ctx.restore();
   }
-
   ctx.restore();
 }
 
 function drawSparkles(time) {
   for (let i = 0; i < 60; i++) {
-    const x =
-      (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) *
-      innerWidth;
-
-    const y =
-      (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) *
-      innerHeight;
+    const x = (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
+    const y = (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) * innerHeight;
 
     ctx.fillStyle = "rgba(210, 120, 255, 0.08)";
     ctx.beginPath();
@@ -196,6 +167,38 @@ function animate(time) {
 
   requestAnimationFrame(animate);
 }
+
+openCard.addEventListener("click", async () => {
+  const canvas = document.getElementById("canvas");
+  canvas.classList.remove("hidden");
+  bloomStart = performance.now();
+  openCard.style.transition = "opacity 1s ease";
+  openCard.style.opacity = "0";
+  try {
+    bgMusic.volume = 0.6;
+    await bgMusic.play();
+  } catch (error) {
+    console.log("Music could not be played.");
+  }
+  setTimeout(() => {
+    openCard.style.display = "none";
+    birthdayContent.classList.remove("hidden");
+  }, 1000);
+});
+
+showMore.addEventListener("click", (event) => {
+  const canvas = document.getElementById("canvas");
+  bloomStart = performance.now();
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  birthdayContent.classList.add("hidden");
+  birthdayContent.style.display = "none";
+
+  moreContent.classList.remove("hidden");
+  moreContent.style.display = "flex";
+});
 
 resize();
 animate(0);
