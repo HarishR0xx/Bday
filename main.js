@@ -28,7 +28,6 @@ function createLilies() {
       swayOffset: Math.random() * Math.PI * 2
     });
   }
-
   lilies.sort((a, b) => a.scale - b.scale);
 }
 
