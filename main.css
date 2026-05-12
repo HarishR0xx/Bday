@@ -4,26 +4,22 @@
   box-sizing: border-box;
 }
 
+html,
 body {
-  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  background: radial-gradient(circle at center, #220033 0%, #090010 55%, #020004 100%);
+  background: radial-gradient(circle at center,
+      #220033 0%,
+      #090010 55%,
+      #020004 100%) !important;
   color: white;
 }
 
-.hidden {
-  display: none;
-}
-
-.hero {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem;
+body {
+  font-family: "Segoe UI", sans-serif;
 }
 
 canvas {
@@ -33,9 +29,44 @@ canvas {
   height: 100%;
   display: block;
   z-index: 0;
+  background: transparent !important;
 }
 
+.open-card,
+.hero,
+#birthdayContent,
+#moreContent {
+  background: transparent !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.open-card,
+.hero {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.open-card {
+  z-index: 100;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.hero {
+  z-index: 10;
+}
+
+.open-envelope,
 .card {
+  animation: fadeInCard 0.5s ease;
   position: relative;
   z-index: 2;
   max-width: 900px;
@@ -49,85 +80,8 @@ canvas {
     0 0 80px rgba(198, 92, 255, 0.15);
 }
 
-
-p {
-  font-size: clamp(1.5rem, 2vw, 1.3rem);
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.name {
-  color: #ffd6ff;
-  font-weight: 700;
-}
-
-.button {
-  display: inline-block;
-  margin-top: 2rem;
-  padding: 1rem 2.4rem;
-  border-radius: 999px;
-  text-decoration: none;
-  color: white;
-  background: linear-gradient(135deg, #b33cff, #7a00ff);
-  box-shadow: 0 0 30px rgba(179, 60, 255, 0.6);
-  transition: transform 0.3s ease;
-}
-
-.button:hover {
-  transform: scale(1.05);
-}
-
-.open-card {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at center, #220033 0%, #090010 55%, #020004 100%);
-  z-index: 100;
-  cursor: pointer;
-}
-
 .open-envelope {
-  padding: 3rem 4rem;
-  border-radius: 30px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow:
-    0 0 30px rgba(198, 92, 255, 0.35),
-    0 0 80px rgba(198, 92, 255, 0.2);
   animation: pulse 2s ease-in-out infinite;
-}
-
-.open-envelope h2 {
-  font-size: clamp(2rem, 5vw, 4rem);
-  margin-bottom: 1rem;
-  color: #ffffff;
-  text-shadow:
-    0 0 12px rgba(255, 255, 255, 0.6),
-    0 0 30px rgba(205, 102, 255, 0.9);
-}
-
-.open-envelope p {
-  font-size: 1.2rem;
-  color: #f6ddff;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow:
-      0 0 30px rgba(198, 92, 255, 0.35),
-      0 0 80px rgba(198, 92, 255, 0.2);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow:
-      0 0 40px rgba(198, 92, 255, 0.55),
-      0 0 100px rgba(198, 92, 255, 0.35);
-  }
 }
 
 h1 {
@@ -146,4 +100,70 @@ h2 {
   color: #f6ddff;
   margin-bottom: 1.2rem;
   font-weight: 500;
+}
+
+p {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.name {
+  color: #ffd6ff;
+  font-weight: 700;
+}
+
+.more-link {
+  display: inline-block;
+  margin-top: 2rem;
+  color: #ffd6ff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 6px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.more-link:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+#moreContent {
+  z-index: 20;
+}
+
+#moreContent .card {
+  max-width: 850px;
+  animation: fadeInCard .5s ease;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 30px rgba(198, 92, 255, 0.35),
+      0 0 80px rgba(198, 92, 255, 0.2);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 40px rgba(198, 92, 255, 0.55),
+      0 0 100px rgba(198, 92, 255, 0.35);
+  }
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
