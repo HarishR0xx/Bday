@@ -20,19 +20,65 @@ body {
 
 body {
   font-family: "Segoe UI", sans-serif;
+  touch-action: none;
+}
+
+:root {
+  --vh: 1vh;
+}
+
+/* FIX FULL SCREEN ON MOBILE */
+html,
+body {
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+/* CANVAS RESPONSIVE SAFETY */
+canvas {
+  width: 100vw;
+  height: calc(var(--vh, 1vh) * 100);
+}
+
+.card {
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* CARDS RESPONSIVE */
+.open-envelope,
+.card {
+  width: min(900px, 92vw);
+  padding: clamp(1.2rem, 4vw, 3rem);
+  border-radius: clamp(18px, 3vw, 32px);
+}
+
+/* TEXT SCALE FIX */
+h1 {
+  font-size: clamp(1.6rem, 6vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(1.2rem, 5vw, 3rem);
+}
+
+p {
+  font-size: clamp(0.95rem, 3.8vw, 1.3rem);
+  line-height: 1.7;
+}
+
+/* BACK BUTTON MOBILE FIX */
+.back-btn {
+  top: max(12px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  font-size: 13px;
+  padding: 8px 14px;
 }
 
 .back-btn {
   position: fixed;
-  top: 20px;
-  left: 20px;
   z-index: 200;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 10px 16px;
+  padding: 10px 18px;
   border-radius: 16px;
 
   background: rgba(255, 255, 255, 0.06);
@@ -45,16 +91,12 @@ body {
     0 0 80px rgba(198, 92, 255, 0.15);
 
   color: #f6ddff;
-  font-size: 14px;
-  font-weight: 600;
+  font-weight: 400;
 
   cursor: pointer;
 
-  line-height: 1;
-  text-align: center;
-
   transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
-   animation: fadeInCard 0.4s ease;
+  animation: fadeInCard 0.4s ease;
 }
 
 .back-btn:hover {
@@ -65,6 +107,7 @@ body {
     0 0 40px rgba(198, 92, 255, 0.35),
     0 0 100px rgba(198, 92, 255, 0.2);
 }
+
 canvas {
   position: fixed;
   inset: 0;
