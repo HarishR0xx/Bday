@@ -213,4 +213,3 @@ backBtn.addEventListener("click", () => {
 });
 resize();
 animate(0);
-
