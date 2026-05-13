@@ -185,7 +185,7 @@ openCard.addEventListener("click", async () => {
   openCard.style.opacity = "0";
 
   try {
-    bgMusic.volume = 0.5;
+    bgMusic.volume = .6;
     await bgMusic.play();
   } catch {
     console.log("Music could not be played.");
