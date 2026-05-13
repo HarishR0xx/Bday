@@ -28,7 +28,7 @@ window.addEventListener("resize", resize);
 
 function createLilies() {
   lilies.length = 0;
-  const count = 78;
+  const count = 40;
   for (let i = 0; i < count; i++) {
     lilies.push({
       x: Math.random() * innerWidth,
