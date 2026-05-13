@@ -1,3 +1,5 @@
+/* ---------------- RESET ---------------- */
+
 * {
   margin: 0;
   padding: 0;
@@ -7,7 +9,6 @@
 html,
 body {
   width: 100%;
-  height: 100%;
   height: 100vh;
   overflow: hidden;
   background: radial-gradient(circle at center,
@@ -18,7 +19,7 @@ body {
   font-family: "Segoe UI", sans-serif;
 }
 
-/* ---------------- SAFE AREA SUPPORT ---------------- */
+/* ---------------- SAFE AREA ---------------- */
 
 body {
   padding-top: env(safe-area-inset-top);
@@ -40,13 +41,12 @@ canvas {
   background: transparent;
 }
 
-/* ---------------- UI STATES (IMPORTANT - DO NOT BREAK JS) ---------------- */
+/* ---------------- UI STATES ---------------- */
 
 .hidden {
   display: none !important;
 }
 
-/* FIX: ensures JS display switching always works */
 #birthdayContent,
 #moreContent {
   position: fixed;
@@ -79,10 +79,31 @@ canvas {
   background: rgba(0, 0, 0, 0.15);
 }
 
+/* ---------------- CARD ANIMATION ---------------- */
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(25px) scale(0.95);
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.animate-in {
+  animation: cardEnter 0.65s ease-out both;
+}
+
 /* ---------------- CARD ---------------- */
 
 .open-envelope,
 .card {
+  animation: fadeInCard 0.5s ease;
   max-width: 900px;
   width: min(900px, 92vw);
   padding: clamp(1.2rem, 4vw, 3rem);
@@ -100,9 +121,15 @@ canvas {
 
   position: relative;
   z-index: 2;
+
+  transform-origin: center;
 }
 
-/* ---------------- BACK BUTTON (FIXED RESPONSIVE) ---------------- */
+.open-envelope {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ---------------- BACK BUTTON ---------------- */
 
 .back-btn {
   position: fixed;
@@ -137,7 +164,14 @@ canvas {
   cursor: pointer;
 
   transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
-  transform: translateZ(0);
+}
+
+.back-button:hover {
+  transform: scale(1.2);
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 0 25px rgba(198, 92, 255, 0.45),
+    inset 0 0 12px rgba(255, 255, 255, 0.08);
 }
 
 .back-btn:active {
@@ -162,12 +196,36 @@ h2 {
   margin-bottom: 1rem;
 }
 
-/* ---------------- TEXT BODY ---------------- */
-
 p {
   font-size: clamp(0.95rem, 3.5vw, 1.3rem);
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 30px rgba(198, 92, 255, 0.35), 0 0 80px rgba(198, 92, 255, 0.2);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(198, 92, 255, 0.55), 0 0 100px rgba(198, 92, 255, 0.35);
+  }
+}
+
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ---------------- LINK ---------------- */
@@ -178,9 +236,23 @@ p {
   font-weight: 600;
   cursor: pointer;
   display: inline-block;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-/* ---------------- MOBILE RESPONSIVE ---------------- */
+.more-link:hover {
+  transform: scale(1.05);
+  opacity: 0.85;
+}
+
+#moreContent {
+  z-index: 20;
+}
+
+#moreContent .card {
+  animation: fadeInCard .5s ease;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
 
 @media (max-width: 768px) {
 
@@ -201,11 +273,6 @@ p {
 
   p {
     font-size: clamp(0.95rem, 3.8vw, 1.2rem);
-    line-height: 1.6;
-  }
-
-  .more-link {
-    font-size: 1rem;
   }
 }
 
@@ -274,25 +341,6 @@ p {
 }
 
 /* ---------------- LANDSCAPE ---------------- */
-@media (max-width: 430px) {
-
-  .open-envelope,
-  .card {
-    width: 94vw;
-    padding: 1.2rem;
-  }
-
-  h1 {
-    font-size: clamp(1.4rem, 6vw, 2.4rem);
-  }
-
-  .back-btn {
-    top: calc(env(safe-area-inset-top, 0px) + 12px);
-    left: calc(env(safe-area-inset-left, 0px) + 12px);
-    padding: 8px 14px;
-    font-size: 13px;
-  }
-}
 
 @media (max-height: 500px) and (orientation: landscape) {
   .card {
