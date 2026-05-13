@@ -7,6 +7,7 @@ const backBtn = document.getElementById("backBtn");
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+
 const lilies = [];
 let bloomStart = null;
 
@@ -28,7 +29,9 @@ window.addEventListener("resize", resize);
 
 function createLilies() {
   lilies.length = 0;
-  const count = 35;
+
+  const count = 35; // fixed
+
   for (let i = 0; i < count; i++) {
     lilies.push({
       x: Math.random() * innerWidth,
@@ -67,7 +70,7 @@ function drawPetal(length, width, glow) {
   ctx.strokeStyle = "rgba(245, 220, 255, 0.96)";
   ctx.lineWidth = 2;
   ctx.shadowColor = "#c85cff";
-  ctx.shadowBlur = 25;
+  ctx.shadowBlur = glow;
   ctx.stroke();
 }
 
@@ -130,16 +133,20 @@ function drawLily(lily, time) {
     ctx.lineWidth = 1.5;
     ctx.shadowColor = "#ffe27d";
     ctx.shadowBlur = 8;
+
     ctx.beginPath();
     ctx.moveTo(0, -4);
     ctx.lineTo(0, -28);
     ctx.stroke();
+
     ctx.fillStyle = "#ffbf4d";
     ctx.beginPath();
     ctx.arc(0, -30, 2.5, 0, Math.PI * 2);
     ctx.fill();
+
     ctx.restore();
   }
+
   ctx.restore();
 }
 
@@ -167,18 +174,23 @@ function animate(time) {
   requestAnimationFrame(animate);
 }
 
+/* EVENTS */
+
 openCard.addEventListener("click", async () => {
-  const canvas = document.getElementById("canvas");
+
+
   canvas.classList.remove("hidden");
-  bloomStart = performance.now();
   openCard.style.transition = "opacity 1s ease";
+  bloomStart = performance.now();
   openCard.style.opacity = "0";
+
   try {
-    bgMusic.volume = 0.6;
+    bgMusic.volume = 0.1;
     await bgMusic.play();
-  } catch (error) {
+  } catch {
     console.log("Music could not be played.");
   }
+
   setTimeout(() => {
     openCard.style.display = "none";
     birthdayContent.classList.remove("hidden");
@@ -186,20 +198,20 @@ openCard.addEventListener("click", async () => {
 });
 
 showMore.addEventListener("click", (event) => {
-
-  const canvas = document.getElementById("canvas");
-  bloomStart = performance.now();
-
   event.preventDefault();
   event.stopPropagation();
+
+  bloomStart = performance.now();
 
   birthdayContent.classList.add("hidden");
   birthdayContent.style.display = "none";
 
   moreContent.classList.remove("hidden");
   moreContent.style.display = "flex";
+
   backBtn.classList.remove("hidden");
 });
+
 backBtn.addEventListener("click", () => {
   moreContent.classList.add("hidden");
   moreContent.style.display = "none";
@@ -209,7 +221,9 @@ backBtn.addEventListener("click", () => {
 
   backBtn.classList.add("hidden");
 
-  bloomStart = performance.now(); // optional: re-trigger bloom effect
+  bloomStart = performance.now();
 });
+
+/* INIT */
 resize();
 animate(0);
