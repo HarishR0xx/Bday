@@ -3,6 +3,7 @@ const birthdayContent = document.getElementById("birthdayContent");
 const moreContent = document.getElementById("moreContent");
 const showMore = document.getElementById("showMore");
 const bgMusic = document.getElementById("bgMusic");
+const backBtn = document.getElementById("backBtn");
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -27,9 +28,7 @@ window.addEventListener("resize", resize);
 
 function createLilies() {
   lilies.length = 0;
-
-  const count = Math.max(40, Math.floor((innerWidth * innerHeight) / 25000));
-
+  const count = 78;
   for (let i = 0; i < count; i++) {
     lilies.push({
       x: Math.random() * innerWidth,
@@ -68,14 +67,14 @@ function drawPetal(length, width, glow) {
   ctx.strokeStyle = "rgba(245, 220, 255, 0.96)";
   ctx.lineWidth = 2;
   ctx.shadowColor = "#c85cff";
-  ctx.shadowBlur = glow;
+  ctx.shadowBlur = 25;
   ctx.stroke();
 }
 
 function drawLily(lily, time) {
   ctx.save();
 
-  const sway = Math.sin(time * 0.001 + lily.swayOffset) * 0.1;
+  const sway = Math.sin(time * 0.001 + lily.swayOffset) * 0.06;
 
   let bloomScale = 1;
 
@@ -145,7 +144,7 @@ function drawLily(lily, time) {
 }
 
 function drawSparkles(time) {
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 25; i++) {
     const x = (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
     const y = (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) * innerHeight;
 
@@ -187,6 +186,7 @@ openCard.addEventListener("click", async () => {
 });
 
 showMore.addEventListener("click", (event) => {
+
   const canvas = document.getElementById("canvas");
   bloomStart = performance.now();
 
@@ -198,7 +198,19 @@ showMore.addEventListener("click", (event) => {
 
   moreContent.classList.remove("hidden");
   moreContent.style.display = "flex";
+  backBtn.classList.remove("hidden");
 });
+backBtn.addEventListener("click", () => {
+  moreContent.classList.add("hidden");
+  moreContent.style.display = "none";
 
+  birthdayContent.classList.remove("hidden");
+  birthdayContent.style.display = "flex";
+
+  backBtn.classList.add("hidden");
+
+  bloomStart = performance.now(); // optional: re-trigger bloom effect
+});
 resize();
 animate(0);
+
