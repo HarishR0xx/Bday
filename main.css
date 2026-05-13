@@ -6,30 +6,117 @@
 
 html,
 body {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
+  height: 100vh;
   overflow: hidden;
   background: radial-gradient(circle at center,
       #220033 0%,
       #090010 55%,
-      #020004 100%) !important;
+      #020004 100%);
   color: white;
-}
-
-body {
   font-family: "Segoe UI", sans-serif;
 }
 
+/* ---------------- SAFE AREA SUPPORT ---------------- */
+
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ---------------- CANVAS ---------------- */
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* ---------------- UI STATES (IMPORTANT - DO NOT BREAK JS) ---------------- */
+
+.hidden {
+  display: none !important;
+}
+
+/* FIX: ensures JS display switching always works */
+#birthdayContent,
+#moreContent {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  z-index: 10;
+}
+
+#birthdayContent:not(.hidden),
+#moreContent:not(.hidden) {
+  display: flex;
+}
+
+/* ---------------- OPEN SCREEN ---------------- */
+
+.open-card {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  z-index: 100;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+/* ---------------- CARD ---------------- */
+
+.open-envelope,
+.card {
+  max-width: 900px;
+  width: min(900px, 92vw);
+  padding: clamp(1.2rem, 4vw, 3rem);
+
+  border-radius: 28px;
+
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  box-shadow:
+    0 0 30px rgba(198, 92, 255, 0.25),
+    0 0 80px rgba(198, 92, 255, 0.15);
+
+  position: relative;
+  z-index: 2;
+}
+
+/* ---------------- BACK BUTTON (FIXED RESPONSIVE) ---------------- */
+
 .back-btn {
   position: fixed;
-  top: 20px;
-  left: 20px;
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  left: calc(env(safe-area-inset-left, 0px) + 14px);
+
   z-index: 200;
 
-  padding: 10px 18px;
-  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 16px;
+  border-radius: 14px;
 
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(14px);
@@ -42,37 +129,27 @@ body {
 
   color: #f6ddff;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
+
+  line-height: 1;
+  white-space: nowrap;
 
   cursor: pointer;
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
-  animation: fadeInCard 0.4s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+  transform: translateZ(0);
 }
 
-.back-btn:hover {
-  transform: scale(1.05);
-  opacity: 0.9;
+.back-btn:active {
+  transform: scale(0.96);
+}
 
-  box-shadow:
-    0 0 40px rgba(198, 92, 255, 0.35),
-    0 0 100px rgba(198, 92, 255, 0.2);
-}
-canvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  z-index: 0;
-  background: transparent !important;
-}
+/* ---------------- TEXT ---------------- */
 
 h1 {
   font-size: clamp(1.8rem, 5vw, 4.2rem);
   line-height: 1;
   margin-bottom: 1rem;
-  color: #ffffff;
   text-shadow:
     0 0 12px rgba(255, 255, 255, 0.6),
     0 0 30px rgba(205, 102, 255, 0.9),
@@ -80,128 +157,154 @@ h1 {
 }
 
 h2 {
-  font-size: clamp(1.8rem, 4.5vw, 3rem);
+  font-size: clamp(1.4rem, 4vw, 3rem);
   color: #f6ddff;
-  margin-bottom: 1.2rem;
-  font-weight: 500;
+  margin-bottom: 1rem;
 }
 
-.open-card,
-.hero,
-#birthdayContent,
-#moreContent {
-  background: transparent !important;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.open-card,
-.hero {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 2rem;
-}
-
-.open-card {
-  z-index: 100;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.15);
-}
-
-.hero {
-  z-index: 10;
-}
-
-.open-envelope,
-.card {
-  animation: fadeInCard 0.5s ease;
-  position: relative;
-  z-index: 2;
-  max-width: 900px;
-  padding: 3rem;
-  border-radius: 32px;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 0 30px rgba(198, 92, 255, 0.25),
-    0 0 80px rgba(198, 92, 255, 0.15);
-}
-
-.open-envelope {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-
+/* ---------------- TEXT BODY ---------------- */
 
 p {
-  font-size: clamp(1rem, 2vw, 1.3rem);
-  line-height: 1.8;
+  font-size: clamp(0.95rem, 3.5vw, 1.3rem);
+  line-height: 1.7;
   color: rgba(255, 255, 255, 0.9);
 }
 
-.name {
-  color: #ffd6ff;
-  font-weight: 700;
-}
+/* ---------------- LINK ---------------- */
 
 .more-link {
-  display: inline-block;
   margin-top: 2rem;
   color: #ffd6ff;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: none;
-  text-underline-offset: 6px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: inline-block;
 }
 
-.more-link:hover {
-  transform: scale(1.05);
-  opacity: 0.85;
-}
+/* ---------------- MOBILE RESPONSIVE ---------------- */
 
-#moreContent {
-  z-index: 20;
-}
+@media (max-width: 768px) {
 
-#moreContent .card {
-  max-width: 850px;
-  animation: fadeInCard .5s ease;
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow:
-      0 0 30px rgba(198, 92, 255, 0.35),
-      0 0 80px rgba(198, 92, 255, 0.2);
+  .open-envelope,
+  .card {
+    width: 92vw;
+    padding: clamp(1.2rem, 4vw, 2rem);
+    border-radius: 20px;
   }
 
-  50% {
-    transform: scale(1.05);
-    box-shadow:
-      0 0 40px rgba(198, 92, 255, 0.55),
-      0 0 100px rgba(198, 92, 255, 0.35);
+  h1 {
+    font-size: clamp(1.6rem, 6vw, 2.8rem);
+  }
+
+  h2 {
+    font-size: clamp(1.2rem, 5vw, 2rem);
+  }
+
+  p {
+    font-size: clamp(0.95rem, 3.8vw, 1.2rem);
+    line-height: 1.6;
+  }
+
+  .more-link {
+    font-size: 1rem;
   }
 }
 
-@keyframes fadeInCard {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(20px);
+@media (max-width: 430px) {
+
+  .open-envelope,
+  .card {
+    width: 94vw;
+    padding: 1.2rem;
   }
 
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  h1 {
+    font-size: clamp(1.4rem, 6vw, 2.4rem);
+  }
+
+  .back-btn {
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: calc(env(safe-area-inset-left, 0px) + 12px);
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+
+  .open-envelope,
+  .card {
+    width: 94vw;
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (min-width: 360px) and (max-width: 480px) {
+
+  .open-envelope,
+  .card {
+    width: 90vw;
+    padding: 1.5rem;
+  }
+
+  h1 {
+    font-size: clamp(1.7rem, 5.5vw, 2.8rem);
+  }
+}
+
+@media (min-width: 390px) and (max-width: 600px) {
+
+  .open-envelope,
+  .card {
+    width: 88vw;
+    padding: 1.6rem;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+  }
+}
+
+/* ---------------- LANDSCAPE ---------------- */
+@media (max-width: 430px) {
+
+  .open-envelope,
+  .card {
+    width: 94vw;
+    padding: 1.2rem;
+  }
+
+  h1 {
+    font-size: clamp(1.4rem, 6vw, 2.4rem);
+  }
+
+  .back-btn {
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: calc(env(safe-area-inset-left, 0px) + 12px);
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .card {
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  p {
+    font-size: 0.9rem;
   }
 }
