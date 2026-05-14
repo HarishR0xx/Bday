@@ -99,7 +99,7 @@ function drawLily(lily, time) {
   ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
   ctx.stroke();
 
-  const glow = 10 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
+  const glow = 16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
 
   for (let i = 0; i < 6; i++) {
     ctx.save();
