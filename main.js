@@ -1,3 +1,4 @@
+// DOM Elements
 const openCard = document.getElementById("openCard");
 const birthdayContent = document.getElementById("birthdayContent");
 const moreContent = document.getElementById("moreContent");
@@ -8,9 +9,21 @@ const backBtn = document.getElementById("backBtn");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+// ======================================================
+// CONFIGURATION
+// ======================================================
+const TOTAL_LILIES = 90;
+const BATCH_SIZE = 18;
+const BATCH_LIFETIME = 4000; // Each batch stays for 4 seconds
+const BATCH_COUNT = TOTAL_LILIES / BATCH_SIZE;
+const CYCLE_DURATION = BATCH_COUNT * BATCH_LIFETIME;
+
 const lilies = [];
 let bloomStart = null;
 
+// ======================================================
+// CANVAS RESIZE
+// ======================================================
 function resize() {
   const dpr = window.devicePixelRatio || 1;
 
@@ -27,24 +40,36 @@ function resize() {
 
 window.addEventListener("resize", resize);
 
+// ======================================================
+// CREATE LILIES
+// ======================================================
 function createLilies() {
   lilies.length = 0;
+  bloomStart = performance.now();
 
-  const count = 25; // fixed
+  for (let i = 0; i < TOTAL_LILIES; i++) {
+    const batchIndex = Math.floor(i / BATCH_SIZE);
 
-  for (let i = 0; i < count; i++) {
     lilies.push({
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight,
       scale: 0.18 + Math.random() * 0.45,
       rotation: Math.random() * Math.PI * 2,
-      swayOffset: Math.random() * Math.PI * 2
+      swayOffset: Math.random() * Math.PI * 2,
+
+      // Timing for each batch
+      appearAt: batchIndex * BATCH_LIFETIME,
+      disappearAt: (batchIndex + 1) * BATCH_LIFETIME
     });
   }
 
+  // Draw smaller lilies first
   lilies.sort((a, b) => a.scale - b.scale);
 }
 
+// ======================================================
+// DRAW PETAL
+// ======================================================
 function drawPetal(length, width, glow) {
   ctx.beginPath();
   ctx.moveTo(0, 0);
@@ -57,7 +82,6 @@ function drawPetal(length, width, glow) {
     0,
     -length
   );
-  
 
   ctx.bezierCurveTo(
     -width * 0.6,
@@ -75,32 +99,74 @@ function drawPetal(length, width, glow) {
   ctx.stroke();
 }
 
+// ======================================================
+// DRAW SINGLE LILY
+// ======================================================
 function drawLily(lily, time) {
+  if (bloomStart === null) return;
+
+  const elapsed = time - bloomStart;
+
+  // Not visible yet
+  if (elapsed < lily.appearAt) return;
+
+  // Completely expired
+  if (elapsed >= lily.disappearAt) return;
+
   ctx.save();
 
   const sway = Math.sin(time * 0.001 + lily.swayOffset) * 0.06;
 
-  let bloomScale = 1;
+  // ==========================================
+  // BLOOM SCALE (grows from 0 to full size)
+  // ==========================================
+  const bloomDuration = 1200;
+  const bloomElapsed = elapsed - lily.appearAt;
+  const bloomProgress = Math.min(bloomElapsed / bloomDuration, 1);
+  const bloomScale = 1 - Math.pow(1 - bloomProgress, 3);
 
-  if (bloomStart !== null) {
-    const elapsed = time - bloomStart;
-    const duration = 5000;
-    const progress = Math.min(elapsed / duration, 1);
-    bloomScale = 1 - Math.pow(1 - progress, 3);
+  // ==========================================
+  // FADE IN
+  // ==========================================
+  const fadeInDuration = 1000;
+  let fadeIn = 1;
+
+  if (bloomElapsed < fadeInDuration) {
+    const p = bloomElapsed / fadeInDuration;
+    fadeIn = Math.min(1, p * p * (3 - 2 * p)); // smoothstep easing
   }
 
+  // ==========================================
+  // FADE OUT
+  // ==========================================
+  const fadeOutDuration = 1000;
+  const timeUntilDisappear = lily.disappearAt - elapsed;
+
+  let fadeOut = 1;
+
+  if (timeUntilDisappear < fadeOutDuration) {
+    const p = Math.max(0, timeUntilDisappear / fadeOutDuration);
+    fadeOut = p * p; // ease-out
+  }
+
+  // Final opacity combines both effects
+  const opacity = fadeIn * fadeOut;
+
+  // Apply opacity to the whole flower
+  ctx.globalAlpha = opacity;
+
+  // ==========================================
+  // TRANSFORM
+  // ==========================================
   ctx.translate(lily.x, lily.y);
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
+  // Animated glow
+  const glow =
+    (10 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
 
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
-  ctx.stroke();
-
-  const glow = 16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
-
+  // Outer petals
   for (let i = 0; i < 6; i++) {
     ctx.save();
     ctx.rotate((Math.PI * 2 / 6) * i);
@@ -108,6 +174,7 @@ function drawLily(lily, time) {
     ctx.restore();
   }
 
+  // Inner petals
   for (let i = 0; i < 6; i++) {
     ctx.save();
     ctx.rotate((Math.PI * 2 / 6) * i + Math.PI / 6);
@@ -115,21 +182,24 @@ function drawLily(lily, time) {
     ctx.restore();
   }
 
+  // Center
   ctx.fillStyle = "#fff6b0";
   ctx.shadowColor = "#fff6b0";
-  ctx.shadowBlur = 25;
+  ctx.shadowBlur = 25 * opacity;
 
   ctx.beginPath();
   ctx.arc(0, -8, 8, 0, Math.PI * 2);
   ctx.fill();
 
+  // Stamens
   for (let i = 0; i < 6; i++) {
     ctx.save();
     ctx.rotate((Math.PI * 2 / 6) * i);
+
     ctx.strokeStyle = "#ffe27d";
     ctx.lineWidth = 1.5;
     ctx.shadowColor = "#ffe27d";
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 8 * opacity;
 
     ctx.beginPath();
     ctx.moveTo(0, -4);
@@ -147,10 +217,16 @@ function drawLily(lily, time) {
   ctx.restore();
 }
 
+// ======================================================
+// BACKGROUND SPARKLES
+// ======================================================
 function drawSparkles(time) {
   for (let i = 0; i < 25; i++) {
-    const x = (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
-    const y = (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) * innerHeight;
+    const x =
+      (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
+    const y =
+      (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) *
+      innerHeight;
 
     ctx.fillStyle = "rgba(210, 120, 255, 0.08)";
     ctx.beginPath();
@@ -159,11 +235,25 @@ function drawSparkles(time) {
   }
 }
 
+// ======================================================
+// ANIMATION LOOP
+// ======================================================
 function animate(time) {
+  if (bloomStart === null) {
+    bloomStart = time;
+  }
+
   ctx.clearRect(0, 0, innerWidth, innerHeight);
 
   drawSparkles(time);
 
+  // Restart with a completely new set of lilies
+  const elapsed = time - bloomStart;
+  if (elapsed >= CYCLE_DURATION) {
+    createLilies();
+  }
+
+  // Draw all visible lilies
   for (const lily of lilies) {
     drawLily(lily, time);
   }
@@ -171,26 +261,28 @@ function animate(time) {
   requestAnimationFrame(animate);
 }
 
-/* EVENTS */
-
+// ======================================================
+// EVENTS
+// ======================================================
 openCard.addEventListener("click", async () => {
-
-
   canvas.classList.remove("hidden");
+
   openCard.style.transition = "opacity 1s ease";
-  bloomStart = performance.now();
   openCard.style.opacity = "0";
 
+  createLilies();
+
   try {
-    bgMusic.volume = .6;
+    bgMusic.volume = 0.6;
     await bgMusic.play();
-  } catch {
-    console.log("Music could not be played.");
+  } catch (err) {
+    console.log("Music could not be played.", err);
   }
 
   setTimeout(() => {
     openCard.style.display = "none";
     birthdayContent.classList.remove("hidden");
+    birthdayContent.style.display = "flex";
   }, 1000);
 });
 
@@ -198,7 +290,7 @@ showMore.addEventListener("click", (event) => {
   event.preventDefault();
   event.stopPropagation();
 
-  bloomStart = performance.now();
+  createLilies();
 
   birthdayContent.classList.add("hidden");
   birthdayContent.style.display = "none";
@@ -218,9 +310,11 @@ backBtn.addEventListener("click", () => {
 
   backBtn.classList.add("hidden");
 
-  bloomStart = performance.now();
+  createLilies();
 });
 
-/* INIT */
+// ======================================================
+// INITIALIZE
+// ======================================================
 resize();
-animate(0);
+requestAnimationFrame(animate);
