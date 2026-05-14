@@ -156,8 +156,9 @@ function drawLily(lily, time) {
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
+
   // Glow
-  const glow = (12 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
+  const glow = (16 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
 
   // Outer petals
   for (let i = 0; i < 6; i++) {
