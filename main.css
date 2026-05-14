@@ -48,7 +48,14 @@ canvas {
 }
 
 /* ---------------- CONTENT SECTIONS ---------------- */
-
+.justified {
+  text-align: justify;
+  hyphens: auto; /* Adds hyphenation when supported */
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.6;
+  max-width: 600px; /* Prevents very narrow columns */
+}
 #birthdayContent,
 #moreContent {
   position: fixed;
@@ -69,9 +76,7 @@ canvas {
 #birthdayContent {
   align-items: center;
   justify-content: center;
-  padding:
-    calc(env(safe-area-inset-top, 0px) + 1rem)
-    1.5rem
+  padding: calc(env(safe-area-inset-top, 0px) + 1rem) 1.5rem
     calc(env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
@@ -87,9 +92,7 @@ canvas {
   z-index: 20;
 
   /* Reserve space for back button above the card */
-  padding:
-    calc(env(safe-area-inset-top, 0px) + 70px)
-    1.5rem
+  padding: calc(env(safe-area-inset-top, 0px) + 70px) 1.5rem
     calc(env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
@@ -155,10 +158,8 @@ canvas {
 
   /* Keep card inside viewport */
   max-height: calc(
-    100vh -
-    env(safe-area-inset-top, 0px) -
-    env(safe-area-inset-bottom, 0px) -
-    2rem
+    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      2rem
   );
 
   /* Scroll inside the card when content is too tall */
@@ -187,10 +188,8 @@ canvas {
 /* More-content card: leave room for the back button */
 #moreContent .card {
   max-height: calc(
-    100vh -
-    env(safe-area-inset-top, 0px) -
-    env(safe-area-inset-bottom, 0px) -
-    90px
+    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
+      90px
   );
 }
 
@@ -250,7 +249,7 @@ canvas {
 /* ---------------- TEXT ---------------- */
 
 h1 {
-  font-size: clamp(1.8rem, 5vw, 4.2rem);
+  font-size: clamp(1.5rem, 4.5vw, 4rem);
   line-height: 1;
   margin-bottom: 1rem;
   text-shadow:
@@ -260,7 +259,7 @@ h1 {
 }
 
 h2 {
-  font-size: clamp(1.4rem, 4vw, 3rem);
+  font-size: clamp(1.2rem, 3.5vw, 2.7rem);
   color: #f6ddff;
   margin-bottom: 1rem;
 }
@@ -310,7 +309,9 @@ p {
   font-weight: 600;
   cursor: pointer;
   display: inline-block;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .more-link:hover {
@@ -322,16 +323,12 @@ p {
 
 @media (max-width: 768px) {
   #birthdayContent {
-    padding:
-      calc(env(safe-area-inset-top, 0px) + 1rem)
-      1rem
+    padding: calc(env(safe-area-inset-top, 0px) + 1rem) 1rem
       calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
 
   #moreContent {
-    padding:
-      calc(env(safe-area-inset-top, 0px) + 68px)
-      1rem
+    padding: calc(env(safe-area-inset-top, 0px) + 68px) 1rem
       calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
 
@@ -367,7 +364,7 @@ p {
   }
 
   h1 {
-    font-size: clamp(1.4rem, 6vw, 2.4rem);
+    font-size: clamp(1.4rem, 5vw, 2.4rem);
   }
 
   .back-btn {
@@ -391,7 +388,7 @@ p {
   }
 
   h1 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
   p {
@@ -407,7 +404,7 @@ p {
   }
 
   h1 {
-    font-size: clamp(1.7rem, 5.5vw, 2.8rem);
+    font-size: clamp(1.4rem, 4.5vw, 2.5rem);
   }
 }
 
@@ -431,7 +428,7 @@ p {
   }
 
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   p {
