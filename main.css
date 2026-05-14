@@ -1,3 +1,5 @@
+/* ---------------- RESET ---------------- */
+
 * {
   margin: 0;
   padding: 0;
@@ -48,19 +50,14 @@ canvas {
 }
 
 /* ---------------- CONTENT SECTIONS ---------------- */
-.justified {
-  text-align: justify;
-  hyphens: auto; /* Adds hyphenation when supported */
-  overflow-wrap: break-word;
-  word-break: normal;
-  line-height: 1.6;
-  max-width: 600px; /* Prevents very narrow columns */
-}
+
 #birthdayContent,
 #moreContent {
   position: fixed;
   inset: 0;
   display: none;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -72,27 +69,20 @@ canvas {
   display: flex;
 }
 
-/* Birthday card stays centered */
+/* Birthday card centered */
 #birthdayContent {
-  align-items: center;
-  justify-content: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 1rem) 1.5rem
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 1rem)
+    1.5rem
     calc(env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
-/*
-  More content:
-  - Back button remains fixed at top-left.
-  - Card is centered in the remaining usable space.
-  - If card becomes too tall, the card itself scrolls.
-*/
+/* More content centered in remaining space below back button */
 #moreContent {
-  align-items: center;
-  justify-content: center;
   z-index: 20;
-
-  /* Reserve space for back button above the card */
-  padding: calc(env(safe-area-inset-top, 0px) + 70px) 1.5rem
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 70px)
+    1.5rem
     calc(env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
@@ -131,13 +121,45 @@ canvas {
   animation: cardEnter 0.65s ease-out both;
 }
 
+@keyframes fadeInCard {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 30px rgba(198, 92, 255, 0.35),
+      0 0 80px rgba(198, 92, 255, 0.2);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 40px rgba(198, 92, 255, 0.55),
+      0 0 100px rgba(198, 92, 255, 0.35);
+  }
+}
+
 /* ---------------- CARD ---------------- */
 
 .open-envelope,
 .card {
   animation: fadeInCard 0.5s ease;
-  max-width: 900px;
-  width: min(900px, 92vw);
+
+  /* Use almost the full available width */
+  width: min(1100px, calc(100vw - 3rem));
+  max-width: none;
+
   padding: clamp(1.2rem, 4vw, 3rem);
 
   border-radius: 28px;
@@ -154,24 +176,26 @@ canvas {
   position: relative;
   z-index: 2;
   transform-origin: center;
-  box-sizing: border-box;
 
-  /* Keep card inside viewport */
+  /* Prevent overflow */
   max-height: calc(
-    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
-      2rem
+    100vh -
+    env(safe-area-inset-top, 0px) -
+    env(safe-area-inset-bottom, 0px) -
+    2rem
   );
 
-  /* Scroll inside the card when content is too tall */
+  /* Scroll inside card if content is too tall */
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 
-  /* Prevent text from spilling outside */
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  /* Clean text wrapping */
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
 
-  /* Hide scrollbars (optional) */
+  /* Hide scrollbars */
   scrollbar-width: none;
 }
 
@@ -185,11 +209,13 @@ canvas {
   animation: pulse 2s ease-in-out infinite;
 }
 
-/* More-content card: leave room for the back button */
+/* Reserve space for back button */
 #moreContent .card {
   max-height: calc(
-    100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) -
-      90px
+    100vh -
+    env(safe-area-inset-top, 0px) -
+    env(safe-area-inset-bottom, 0px) -
+    90px
   );
 }
 
@@ -248,8 +274,21 @@ canvas {
 
 /* ---------------- TEXT ---------------- */
 
+/* Ensure all direct children use full width */
+.card > *,
+.open-envelope > * {
+  width: 100%;
+  max-width: none;
+}
+
+/* Headings centered */
+h1,
+h2 {
+  text-align: center;
+}
+
 h1 {
-  font-size: clamp(1.5rem, 4.5vw, 4rem);
+  font-size: clamp(1.8rem, 5vw, 4.2rem);
   line-height: 1;
   margin-bottom: 1rem;
   text-shadow:
@@ -259,59 +298,40 @@ h1 {
 }
 
 h2 {
-  font-size: clamp(1.2rem, 3.5vw, 2.7rem);
+  font-size: clamp(1.4rem, 4vw, 3rem);
   color: #f6ddff;
   margin-bottom: 1rem;
 }
 
+/* Paragraphs use the full card width */
 p {
+  width: 100%;
+  max-width: none;
+  display: block;
+  margin: 0;
+
   font-size: clamp(0.95rem, 3.5vw, 1.3rem);
   line-height: 1.7;
   color: rgba(255, 255, 255, 0.9);
-}
 
-/* ---------------- ANIMATIONS ---------------- */
+  text-align: left;
 
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow:
-      0 0 30px rgba(198, 92, 255, 0.35),
-      0 0 80px rgba(198, 92, 255, 0.2);
-  }
-
-  50% {
-    transform: scale(1.05);
-    box-shadow:
-      0 0 40px rgba(198, 92, 255, 0.55),
-      0 0 100px rgba(198, 92, 255, 0.35);
-  }
-}
-
-@keyframes fadeInCard {
-  from {
-    opacity: 0;
-    transform: scale(0.92) translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
+  word-break: normal;
+  overflow-wrap: break-word;
+  hyphens: none;
 }
 
 /* ---------------- LINK ---------------- */
 
 .more-link {
+  width: 100%;
+  text-align: center;
   margin-top: 2rem;
   color: #ffd6ff;
   font-weight: 600;
   cursor: pointer;
   display: inline-block;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .more-link:hover {
@@ -323,18 +343,22 @@ p {
 
 @media (max-width: 768px) {
   #birthdayContent {
-    padding: calc(env(safe-area-inset-top, 0px) + 1rem) 1rem
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 1rem)
+      1rem
       calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
 
   #moreContent {
-    padding: calc(env(safe-area-inset-top, 0px) + 68px) 1rem
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 68px)
+      1rem
       calc(env(safe-area-inset-bottom, 0px) + 1rem);
   }
 
   .open-envelope,
   .card {
-    width: 92vw;
+    width: calc(100vw - 2rem);
     padding: clamp(1.2rem, 4vw, 2rem);
     border-radius: 20px;
   }
@@ -359,12 +383,12 @@ p {
 
   .open-envelope,
   .card {
-    width: 94vw;
+    width: calc(100vw - 1.5rem);
     padding: 1.2rem;
   }
 
   h1 {
-    font-size: clamp(1.4rem, 5vw, 2.4rem);
+    font-size: clamp(1.4rem, 6vw, 2.4rem);
   }
 
   .back-btn {
@@ -382,45 +406,19 @@ p {
 
   .open-envelope,
   .card {
-    width: 94vw;
+    width: calc(100vw - 1rem);
     padding: 1rem;
     border-radius: 16px;
   }
 
   h1 {
-    font-size: 1rem;
+    font-size: 1.4rem;
   }
 
   p {
     font-size: 0.9rem;
   }
 }
-
-@media (min-width: 360px) and (max-width: 480px) {
-  .open-envelope,
-  .card {
-    width: 90vw;
-    padding: 1.5rem;
-  }
-
-  h1 {
-    font-size: clamp(1.2rem, 4vw, 2.3rem);
-  }
-}
-
-@media (min-width: 390px) and (max-width: 600px) {
-  .open-envelope,
-  .card {
-    width: 88vw;
-    padding: 1.6rem;
-  }
-
-  h1 {
-    font-size: clamp(1.5rem, 4.8vw, 2.7rem);
-  }
-}
-
-/* ---------------- LANDSCAPE ---------------- */
 
 @media (max-height: 500px) and (orientation: landscape) {
   #moreContent {
@@ -428,10 +426,18 @@ p {
   }
 
   h1 {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   p {
     font-size: 0.9rem;
   }
+}
+
+#birthdayContent .card p,
+#birthdayContent .card h1,
+#birthdayContent .card h2,
+#birthdayContent .card .name,
+#birthdayContent .card .more-link {
+  text-align: center;
 }
