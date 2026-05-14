@@ -14,10 +14,10 @@ const ctx = canvas.getContext("2d");
 // ======================================================
 // CONFIGURATION
 // ======================================================
-const TOTAL_LILIES = 20;
-const BATCH_SIZE = 10;
-const BATCH_LIFETIME = 8000; // Each batch lives for 4 seconds
-const BATCH_COUNT = 5;
+const TOTAL_LILIES = 90;
+const BATCH_SIZE = 18;
+const BATCH_LIFETIME = 4000; // Each batch lives for 4 seconds
+const BATCH_COUNT = TOTAL_LILIES / BATCH_SIZE;
 const CYCLE_DURATION = BATCH_COUNT * BATCH_LIFETIME;
 
 const lilies = [];
@@ -59,7 +59,7 @@ function createLilies() {
       rotation: Math.random() * Math.PI * 2,
       swayOffset: Math.random() * Math.PI * 2,
       appearAt: batchIndex * BATCH_LIFETIME,
-      disappearAt: (batchIndex + 1) * BATCH_LIFETIME
+      disappearAt: (batchIndex + 1) * BATCH_LIFETIME,
     });
   }
 
@@ -80,17 +80,10 @@ function drawPetal(length, width, glow) {
     width * 0.6,
     -length * 0.82,
     0,
-    -length
+    -length,
   );
 
-  ctx.bezierCurveTo(
-    -width * 0.6,
-    -length * 0.82,
-    -width,
-    -length * 0.25,
-    0,
-    0
-  );
+  ctx.bezierCurveTo(-width * 0.6, -length * 0.82, -width, -length * 0.25, 0, 0);
 
   ctx.strokeStyle = "rgba(245, 220, 255, 0.96)";
   ctx.lineWidth = 2;
@@ -163,15 +156,23 @@ function drawLily(lily, time) {
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
+  // Stem
+  ctx.strokeStyle = "rgb(191, 255, 182)";
+  ctx.lineWidth = 2;
+  ctx.shadowColor = "rgb(62, 138, 62)";
+  ctx.shadowBlur = 6 * opacity;
 
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
+  ctx.stroke();
   // Glow
-  const glow =
-    (10 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
+  const glow = (16 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
 
   // Outer petals
   for (let i = 0; i < 6; i++) {
     ctx.save();
-    ctx.rotate((Math.PI * 2 / 6) * i);
+    ctx.rotate(((Math.PI * 2) / 6) * i);
     drawPetal(105, 30, glow);
     ctx.restore();
   }
@@ -179,7 +180,7 @@ function drawLily(lily, time) {
   // Inner petals
   for (let i = 0; i < 6; i++) {
     ctx.save();
-    ctx.rotate((Math.PI * 2 / 6) * i + Math.PI / 6);
+    ctx.rotate(((Math.PI * 2) / 6) * i + Math.PI / 6);
     drawPetal(72, 18, glow * 0.7);
     ctx.restore();
   }
@@ -196,7 +197,7 @@ function drawLily(lily, time) {
   // Stamens
   for (let i = 0; i < 6; i++) {
     ctx.save();
-    ctx.rotate((Math.PI * 2 / 6) * i);
+    ctx.rotate(((Math.PI * 2) / 6) * i);
 
     ctx.strokeStyle = "#ffe27d";
     ctx.lineWidth = 1.5;
@@ -224,11 +225,8 @@ function drawLily(lily, time) {
 // ======================================================
 function drawSparkles(time) {
   for (let i = 0; i < 25; i++) {
-    const x =
-      (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
-    const y =
-      (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) *
-      innerHeight;
+    const x = (Math.sin(time * 0.0002 + i) * 0.5 + 0.5) * innerWidth;
+    const y = (Math.cos(time * 0.00016 + i * 2.7) * 0.5 + 0.5) * innerHeight;
 
     ctx.fillStyle = "rgba(210, 120, 255, 0.08)";
     ctx.beginPath();
