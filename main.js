@@ -16,7 +16,7 @@ const ctx = canvas.getContext("2d");
 // ======================================================
 const TOTAL_LILIES = 20;
 const BATCH_SIZE = 10;
-const BATCH_LIFETIME = 4000; // Each batch lives for 4 seconds
+const BATCH_LIFETIME = 8000; // Each batch lives for 4 seconds
 const BATCH_COUNT = 5;
 const CYCLE_DURATION = BATCH_COUNT * BATCH_LIFETIME;
 
