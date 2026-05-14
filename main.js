@@ -30,7 +30,7 @@ window.addEventListener("resize", resize);
 function createLilies() {
   lilies.length = 0;
 
-  const count = 35; // fixed
+  const count = 25; // fixed
 
   for (let i = 0; i < count; i++) {
     lilies.push({
