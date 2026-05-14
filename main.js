@@ -156,18 +156,8 @@ function drawLily(lily, time) {
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
-  // Stem
-  ctx.strokeStyle = "rgb(191, 255, 182)";
-  ctx.lineWidth = 2;
-  ctx.shadowColor = "rgb(62, 138, 62)";
-  ctx.shadowBlur = 6 * opacity;
-
-  ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
-  ctx.stroke();
   // Glow
-  const glow = (16 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
+  const glow = (12 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
 
   // Outer petals
   for (let i = 0; i < 6; i++) {
