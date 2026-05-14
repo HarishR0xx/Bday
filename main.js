@@ -92,10 +92,10 @@ function drawLily(lily, time) {
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
-  ctx.strokeStyle = "rgba(90, 255, 150, 0.85)";
-  ctx.lineWidth = 3;
-  ctx.shadowColor = "#6cff8e";
-  ctx.shadowBlur = 10;
+  // ctx.strokeStyle = "rgba(90, 255, 150, 0.85)";
+  // ctx.lineWidth = 3;
+  // ctx.shadowColor = "#6cff8e";
+  // ctx.shadowBlur = 10;
 
   ctx.beginPath();
   ctx.moveTo(0, 0);
