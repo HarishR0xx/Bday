@@ -1,4 +1,6 @@
-// DOM Elements
+// ======================================================
+// DOM ELEMENTS
+// ======================================================
 const openCard = document.getElementById("openCard");
 const birthdayContent = document.getElementById("birthdayContent");
 const moreContent = document.getElementById("moreContent");
@@ -14,7 +16,7 @@ const ctx = canvas.getContext("2d");
 // ======================================================
 const TOTAL_LILIES = 90;
 const BATCH_SIZE = 18;
-const BATCH_LIFETIME = 4000; // Each batch stays for 4 seconds
+const BATCH_LIFETIME = 4000; // Each batch lives for 4 seconds
 const BATCH_COUNT = TOTAL_LILIES / BATCH_SIZE;
 const CYCLE_DURATION = BATCH_COUNT * BATCH_LIFETIME;
 
@@ -56,14 +58,12 @@ function createLilies() {
       scale: 0.18 + Math.random() * 0.45,
       rotation: Math.random() * Math.PI * 2,
       swayOffset: Math.random() * Math.PI * 2,
-
-      // Timing for each batch
       appearAt: batchIndex * BATCH_LIFETIME,
       disappearAt: (batchIndex + 1) * BATCH_LIFETIME
     });
   }
 
-  // Draw smaller lilies first
+  // Draw smaller flowers first
   lilies.sort((a, b) => a.scale - b.scale);
 }
 
@@ -110,35 +110,36 @@ function drawLily(lily, time) {
   // Not visible yet
   if (elapsed < lily.appearAt) return;
 
-  // Completely expired
+  // Already disappeared
   if (elapsed >= lily.disappearAt) return;
 
   ctx.save();
 
+  // Gentle sway
   const sway = Math.sin(time * 0.001 + lily.swayOffset) * 0.06;
 
-  // ==========================================
-  // BLOOM SCALE (grows from 0 to full size)
-  // ==========================================
+  // ----------------------------
+  // Bloom scale animation
+  // ----------------------------
   const bloomDuration = 1200;
   const bloomElapsed = elapsed - lily.appearAt;
   const bloomProgress = Math.min(bloomElapsed / bloomDuration, 1);
   const bloomScale = 1 - Math.pow(1 - bloomProgress, 3);
 
-  // ==========================================
-  // FADE IN
-  // ==========================================
+  // ----------------------------
+  // Fade in
+  // ----------------------------
   const fadeInDuration = 1000;
   let fadeIn = 1;
 
   if (bloomElapsed < fadeInDuration) {
-    const p = bloomElapsed / fadeInDuration;
-    fadeIn = Math.min(1, p * p * (3 - 2 * p)); // smoothstep easing
+    const p = Math.max(0, bloomElapsed / fadeInDuration);
+    fadeIn = p * p * (3 - 2 * p); // smoothstep
   }
 
-  // ==========================================
-  // FADE OUT
-  // ==========================================
+  // ----------------------------
+  // Fade out
+  // ----------------------------
   const fadeOutDuration = 1000;
   const timeUntilDisappear = lily.disappearAt - elapsed;
 
@@ -146,23 +147,24 @@ function drawLily(lily, time) {
 
   if (timeUntilDisappear < fadeOutDuration) {
     const p = Math.max(0, timeUntilDisappear / fadeOutDuration);
-    fadeOut = p * p; // ease-out
+    fadeOut = p * p;
   }
 
-  // Final opacity combines both effects
+  // Final opacity
   const opacity = fadeIn * fadeOut;
 
-  // Apply opacity to the whole flower
+  // Apply opacity
   ctx.globalAlpha = opacity;
 
-  // ==========================================
-  // TRANSFORM
-  // ==========================================
+  // ----------------------------
+  // Transform
+  // ----------------------------
   ctx.translate(lily.x, lily.y);
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
-  // Animated glow
+
+  // Glow
   const glow =
     (10 + Math.sin(time * 0.003 + lily.swayOffset) * 8) * opacity;
 
@@ -247,13 +249,13 @@ function animate(time) {
 
   drawSparkles(time);
 
-  // Restart with a completely new set of lilies
+  // Restart cycle with new random lilies
   const elapsed = time - bloomStart;
   if (elapsed >= CYCLE_DURATION) {
     createLilies();
   }
 
-  // Draw all visible lilies
+  // Draw visible lilies
   for (const lily of lilies) {
     drawLily(lily, time);
   }
@@ -262,11 +264,30 @@ function animate(time) {
 }
 
 // ======================================================
-// EVENTS
+// AUDIO CONTROL
 // ======================================================
-openCard.addEventListener("click", async () => {
-  canvas.classList.remove("hidden");
 
+// Stop music when page is closed, refreshed, or navigated away
+window.addEventListener("beforeunload", () => {
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+});
+
+window.addEventListener("beforeunload", () => {
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+});
+
+// ======================================================
+// UI EVENTS
+// ======================================================
+let hasOpenedCard = false;
+
+// In your openCard click handler, set this flag BEFORE playing music.
+openCard.addEventListener("click", async () => {
+  hasOpenedCard = true;
+
+  canvas.classList.remove("hidden");
   openCard.style.transition = "opacity 1s ease";
   openCard.style.opacity = "0";
 
@@ -281,11 +302,36 @@ openCard.addEventListener("click", async () => {
 
   setTimeout(() => {
     openCard.style.display = "none";
+
     birthdayContent.classList.remove("hidden");
     birthdayContent.style.display = "flex";
   }, 1000);
 });
 
+// Pause when the tab is hidden.
+// Resume only if the user has already opened the card.
+document.addEventListener("visibilitychange", async () => {
+  if (document.hidden) {
+    bgMusic.pause();
+  } else {
+    // Do not autoplay while the open card screen is still visible.
+    if (!hasOpenedCard) return;
+
+    try {
+      if (bgMusic.paused) {
+        await bgMusic.play();
+      }
+    } catch (err) {
+      console.log("Music could not resume automatically.", err);
+    }
+  }
+});
+
+// Stop and reset only when the page is closed or refreshed.
+window.addEventListener("beforeunload", () => {
+  bgMusic.pause();
+  bgMusic.currentTime = 0;
+});
 showMore.addEventListener("click", (event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -302,6 +348,8 @@ showMore.addEventListener("click", (event) => {
 });
 
 backBtn.addEventListener("click", () => {
+  createLilies();
+
   moreContent.classList.add("hidden");
   moreContent.style.display = "none";
 
@@ -309,8 +357,6 @@ backBtn.addEventListener("click", () => {
   birthdayContent.style.display = "flex";
 
   backBtn.classList.add("hidden");
-
-  createLilies();
 });
 
 // ======================================================
