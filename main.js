@@ -57,6 +57,7 @@ function drawPetal(length, width, glow) {
     0,
     -length
   );
+  
 
   ctx.bezierCurveTo(
     -width * 0.6,
@@ -83,7 +84,7 @@ function drawLily(lily, time) {
 
   if (bloomStart !== null) {
     const elapsed = time - bloomStart;
-    const duration = 2000;
+    const duration = 5000;
     const progress = Math.min(elapsed / duration, 1);
     bloomScale = 1 - Math.pow(1 - progress, 3);
   }
@@ -92,17 +93,13 @@ function drawLily(lily, time) {
   ctx.rotate(lily.rotation + sway);
   ctx.scale(lily.scale * bloomScale, lily.scale * bloomScale);
 
-  // ctx.strokeStyle = "rgba(90, 255, 150, 0.85)";
-  // ctx.lineWidth = 3;
-  // ctx.shadowColor = "#6cff8e";
-  // ctx.shadowBlur = 10;
 
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.bezierCurveTo(12, 70, -10, 140, 0, 220);
   ctx.stroke();
 
-  const glow = 16 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
+  const glow = 10 + Math.sin(time * 0.003 + lily.swayOffset) * 8;
 
   for (let i = 0; i < 6; i++) {
     ctx.save();
